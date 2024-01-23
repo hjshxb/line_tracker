@@ -6,7 +6,7 @@ This is an unofficial implementation of line optical flow, more details can be f
 The codes use ZNCC match to decide that those lines are tracing fail.
 
 <figure class="half">
-    <img src="./asset/demo.png" width="50%" height="50%"><img src="./asset/demo_zncc.png" width="50%" height="50%">
+    <img src="./asset/demo.png" width="40%" height="40%"><img src="./asset/demo_zncc.png" width="40%" height="40%">
 </figure>
 The previous lines are green, and the next lines are red (left without ZNCC, right with ZNCC).
 
@@ -23,6 +23,7 @@ sudo apt install libeigen3-dev
 ```shell
 mkdir build && cd build
 cmake ..
+make
 ```
 
 3. Run the demo
