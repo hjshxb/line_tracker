@@ -1,9 +1,9 @@
 # Line Tracker
-Line track using optical flow.
+Line tracking using optical flow.
 This is an unofficial implementation of line optical flow, more details can be found in "EPLF-VINS: Real-Time Monocular Visual-Inertial SLAM With Efficient Point-Line Flow Features".
 
 ## Optimize
-The codes use ZNCC match to decide that those lines are tracing fail.
+The codes use ZNCC match to decide which line traces fail.
 
 <figure class="half">
     <img src="./asset/demo.png" width="40%" height="40%"><img src="./asset/demo_zncc.png" width="40%" height="40%">
