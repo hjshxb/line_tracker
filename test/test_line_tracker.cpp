@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
     LOG(INFO) << "Detect lines using " << Timer::toc(t1).count();
 
     // LINE LK track
-    LineLKTracker line_tracker(cv::Size(21, 21), 5, 3, true);
+    LineLKTracker line_tracker(cv::Size(21, 21), 5, 3, true, cv::Size(15, 15));
     std::vector<cv::Vec4f> next_lines;
     std::vector<uchar> status;
     t1 = Timer::tic();
