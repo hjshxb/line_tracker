@@ -82,7 +82,8 @@ void LineLKTracker::operator() (
             LineLKSingleLevel(
                 prev_pyramid[level], next_pyramid[level],
                 prev_lines_kps, next_lines_kps,
-                status, g_param, level, use_check));
+                status, g_param, level, use_check, 
+                winsize_, zncc_winsize_, criteria_));
     }
 
     next_lines = prev_lines;
@@ -172,10 +173,9 @@ bool LineLKSingleLevel::OneLineLKTracker(
     }
 
     // Check angle
-    // if (check_ && std::fabs(*g3) > 0.10) {
-    //     std::cout << (*g3) << std::endl;
-    //     return false;
-    // }
+    if (check_ && std::fabs(*g3) > 0.10) {
+        return false;
+    }
 
 
     // update points
@@ -191,7 +191,7 @@ bool LineLKSingleLevel::OneLineLKTracker(
         // Check zncc
         if (level_ == 0 && check_) {
             float score = ZNCC(prev_kp, next_kp); 
-            if (score < 0.80) {
+            if (score < 0.95) {
                 outlier_count++;
             }
             if (outlier_count > cvRound(0.2 * next_line.size())) {
@@ -242,9 +242,9 @@ float LineLKSingleLevel::CalOnePoint(const cv::Point2f& point,
 inline float LineLKSingleLevel::GetImageValue(const cv::Mat& img,
                                               float x,
                                               float y) const {
-    // The img has been padding
-    // x = (x < 0) ? 0 : ((img.cols - 1) < x) ? (img.cols - 1) : x;
-    // y = (y < 0) ? 0 : ((img.rows - 1) < y) ? (img.rows - 1) : y;
+    //? The img has been padding
+    x = (x < 0) ? 0 : ((img.cols - 1) < x) ? (img.cols - 1) : x;
+    y = (y < 0) ? 0 : ((img.rows - 1) < y) ? (img.rows - 1) : y;
 
     int ix = cvFloor(x);
     int iy = cvFloor(y);
@@ -271,8 +271,8 @@ float LineLKSingleLevel::ZNCC(const cv::Point2f& prev_point,
     double mean_prev = 0;
     double mean_next = 0;
 
-    for (int y = -half_win_.y; y <= half_win_.y; ++y) {
-        for (int x = -half_win_.x; x <= half_win_.x; ++x) {
+    for (int y = -zncc_half_win_.y; y <= zncc_half_win_.y; ++y) {
+        for (int x = -zncc_half_win_.x; x <= zncc_half_win_.x; ++x) {
             float prev_pixel = GetImageValue(prev_img_, prev_point.x + x, prev_point.y + y) / 255.0;
             float next_pixel = GetImageValue(next_img_, next_point.x + x, next_point.y + y) / 255.0;
             mean_prev += prev_pixel;
@@ -281,8 +281,8 @@ float LineLKSingleLevel::ZNCC(const cv::Point2f& prev_point,
             vec_next_pixels.push_back(next_pixel);
         }
     }
-    mean_prev /= (winsize_.height * winsize_.width);
-    mean_next /= (winsize_.height * winsize_.width);
+    mean_prev /= (zncc_winsize_.height * zncc_winsize_.width);
+    mean_next /= (zncc_winsize_.height * zncc_winsize_.width);
 
     double numerator = 0, demoniator1 = 0, demoniator2 = 0;
     for (size_t i = 0; i < vec_prev_pixels.size(); ++i) {

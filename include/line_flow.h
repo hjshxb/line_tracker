@@ -24,12 +24,13 @@ public:
                   int max_level = 5,
                   int n_track = 3,
                   bool check = true,
+                  const cv::Size& zncc_winsize = cv::Size(7, 7),
                   const cv::TermCriteria& criteria = cv::TermCriteria(
                     cv::TermCriteria::COUNT + cv::TermCriteria::EPS,
                     5,
                     0.01))
-     : winsize_(winsize), max_level_(max_level), 
-       n_track_(n_track), check_(check), criteria_(criteria) {}
+     : winsize_(winsize), max_level_(max_level), n_track_(n_track),
+       check_(check), zncc_winsize_(zncc_winsize) ,criteria_(criteria) {}
 
  void operator()(const cv::Mat& prev_img,
                  const cv::Mat& next_img,
@@ -45,6 +46,7 @@ private:
     int max_level_;
     int n_track_;
     bool check_;
+    cv::Size zncc_winsize_;
     cv::TermCriteria criteria_;
 };
 
@@ -60,6 +62,7 @@ public:
                       int level,
                       bool check = true,
                       const cv::Size& winsize = cv::Size(21, 21),
+                      const cv::Size& zncc_winsize = cv::Size(5, 5),
                       const cv::TermCriteria& criteria = cv::TermCriteria(
                        cv::TermCriteria::COUNT + cv::TermCriteria::EPS,
                        5,
@@ -73,8 +76,10 @@ public:
         level_(level),
         check_(check),
         winsize_(winsize),
+        zncc_winsize_(zncc_winsize),
         criteria_(criteria) {
         half_win_ = cv::Point2f((winsize_.width - 1) * 0.5f, (winsize_.height - 1) * 0.5f);
+        zncc_half_win_ = cv::Point2f((zncc_winsize_.width - 1) * 0.5f, (zncc_winsize_.height - 1) * 0.5f);
         if (params_.empty()) {
             params_.resize(prev_lines_.size() * 3, 0.f);
         }
@@ -116,7 +121,9 @@ private:
     int level_;
     bool check_;
     cv::Size winsize_;
+    cv::Size zncc_winsize_;
     cv::TermCriteria criteria_;
     cv::Point2f half_win_;
+    cv::Point2f zncc_half_win_;
 
 };
